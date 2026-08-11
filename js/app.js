@@ -574,6 +574,9 @@ const App = (() => {
         <div class="list-item-right">
           <div class="list-item-value">${Utils.formatCurrency(sale.total)}</div>
           <span class="badge ${pmColor}">${sale.payment}</span>
+          <button class="btn btn-xs btn-ghost mt-1" onclick="event.stopPropagation();App.confirmDeleteSale('${sale.id}')">
+            <i data-lucide="trash-2" style="width:14px;height:14px"></i>
+          </button>
         </div>
       </div>
     `;
@@ -848,6 +851,11 @@ const App = (() => {
     refreshCartPanel,
     updateDenomTotal,
     onLoginSuccess,
+    confirmDeleteProduct,
+    confirmDeleteExpense,
+    confirmDeleteSale,
+    confirmDeleteCustomer,
+    confirmDeleteSupplier,
   };
 })();
 
