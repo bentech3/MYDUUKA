@@ -119,21 +119,38 @@ window.SCREENS['expenses'] = function() {
         </div>
 
         <div class="card overflow-hidden">
-          ${expenses.map(e => `
-            <div class="list-item">
-              <div class="list-item-avatar" style="background:var(--color-danger-100);color:var(--color-danger-700)">
-                💸
-              </div>
-              <div class="list-item-content">
-                <div class="list-item-title">${Utils.escapeHtml(e.category)}</div>
-                <div class="list-item-sub">${Utils.escapeHtml(e.desc || 'No description')} · ${Utils.formatDateShort(e.date)}</div>
-              </div>
-              <div class="list-item-right">
-                <div class="list-item-value text-danger">-${Utils.formatCurrency(e.amount)}</div>
-                <span class="badge badge-neutral">${e.payment}</span>
-              </div>
+          ${expenses.length === 0 ? `
+            <div class="empty-state">
+              <div class="empty-icon">📝</div>
+              <div class="empty-title">No expenses yet</div>
+              <div class="empty-desc">Record your first expense to track spending</div>
+              <button class="btn btn-primary mt-4" onclick="App.navigate('add-expense')">+ Add Expense</button>
             </div>
-          `).join('')}
+          ` : `
+            ${expenses.map(e => `
+             <div class="list-item">
+               <div class="list-item-avatar" style="background:var(--color-danger-100);color:var(--color-danger-700)">
+                 💸
+               </div>
+               <div class="list-item-content">
+                 <div class="list-item-title">${Utils.escapeHtml(e.category)}</div>
+                 <div class="list-item-sub">${Utils.escapeHtml(e.description || 'No description')} · ${Utils.formatDateShort(e.date)}</div>
+               </div>
+               <div class="list-item-right">
+                 <div class="list-item-value text-danger">-${Utils.formatCurrency(e.amount)}</div>
+                 <span class="badge badge-neutral">${e.payment}</span>
+                 <div class="flex gap-1 mt-1">
+                   <button class="btn btn-xs btn-ghost" onclick="App.navigate('edit-expense', {id:'${e.id}'})">
+                     <i data-lucide="edit-2" style="width:14px;height:14px"></i>
+                   </button>
+                   <button class="btn btn-xs btn-ghost" onclick="App.confirmDeleteExpense('${e.id}', '${Utils.escapeHtml(e.category)}')">
+                     <i data-lucide="trash-2" style="width:14px;height:14px"></i>
+                   </button>
+                 </div>
+               </div>
+             </div>
+            `).join('')}
+          `}
         </div>
       </div>
     </div>
@@ -161,7 +178,7 @@ window.SCREENS['add-expense'] = function() {
       return;
     }
 
-    App.handleAction('add-expense-save', { category: selectedCategory, amount, payment, desc });
+    App.handleAction('add-expense-save', { category: selectedCategory, amount, payment, description: desc });
   };
 
   const categories = ['Electricity', 'Water', 'Transport', 'Airtime', 'Internet', 'Rent', 'Wages', 'Packaging', 'Repairs', 'Other'];
@@ -208,8 +225,88 @@ window.SCREENS['add-expense'] = function() {
             <input type="text" class="form-input" id="exp-desc" placeholder="e.g. UMEME Token for August">
           </div>
 
-          <button class="btn btn-primary btn-full btn-lg mt-4" onclick="saveExpenseForm()">
-            Save Expense
+           <button class="btn btn-primary btn-full btn-lg mt-4" onclick="saveExpenseForm()">
+             Save Expense
+           </button>
+         </div>
+       </div>
+     </div>
+   `;
+ };
+
+// Add Expense Screen
+window.SCREENS['edit-expense'] = function(params) {
+  const expense = Store.expenses.find(e => e.id === (params && params.id)) || Store.expenses[0];
+  if (!expense) { App.navigate('expenses'); return ''; }
+
+  let selectedCategory = expense.category;
+
+  window.selectExpenseCat = function(cat) {
+    selectedCategory = cat;
+    document.querySelectorAll('.cat-chip').forEach(c => c.classList.remove('active'));
+    const btn = document.getElementById(`cat-${cat}`);
+    if (btn) btn.classList.add('active');
+  };
+
+  window.saveEditExpense = function() {
+    const amount = parseInt(document.getElementById('exp-amount').value || 0);
+    const desc = document.getElementById('exp-desc').value;
+    const payment = document.getElementById('exp-payment').value;
+
+    if (amount <= 0) { App.showToast('Please enter a valid expense amount', 'error'); return; }
+
+    Store.deleteExpense(expense.id);
+    Store.addExpense(selectedCategory, amount, payment, desc);
+    App.showToast('✓ Expense updated', 'success');
+    App.navigate('expenses');
+  };
+
+  const categories = ['Electricity', 'Water', 'Transport', 'Airtime', 'Internet', 'Rent', 'Wages', 'Packaging', 'Repairs', 'Other'];
+
+  return `
+    <div class="screen">
+      <div class="topbar">
+        <div class="topbar-back" onclick="App.goBack()">
+          <i data-lucide="arrow-left" style="width:20px;height:20px"></i> Back
+        </div>
+        <div class="topbar-title">Edit Expense 📝</div>
+      </div>
+
+      <div class="screen-body">
+        <div class="card card-padded mb-6">
+          <div class="form-group">
+            <label class="form-label">Category</label>
+            <div class="filter-tabs flex-wrap gap-2">
+              ${categories.map(c => `
+                <div class="filter-tab cat-chip ${c === selectedCategory ? 'active' : ''}" 
+                     id="cat-${c}" 
+                     onclick="selectExpenseCat('${c}')">
+                  ${c}
+                </div>
+              `).join('')}
+            </div>
+          </div>
+
+          <div class="form-group mt-4">
+            <label class="form-label">Amount (UGX)</label>
+            <input type="number" class="form-input text-2xl font-bold text-primary" id="exp-amount" value="${expense.amount}">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Payment Method</label>
+            <select class="form-select" id="exp-payment">
+              <option ${expense.payment === 'Cash' ? 'selected' : ''}>Cash</option>
+              <option ${expense.payment === 'Mobile Money' ? 'selected' : ''}>Mobile Money</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Description / Note</label>
+            <input type="text" class="form-input" id="exp-desc" value="${Utils.escapeHtml(expense.description || '')}">
+          </div>
+
+          <button class="btn btn-primary btn-full btn-lg mt-4" onclick="saveEditExpense()">
+            Update Expense
           </button>
         </div>
       </div>

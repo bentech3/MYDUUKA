@@ -44,7 +44,14 @@ window.SCREENS['customers'] = function() {
 
         <!-- Customer List -->
         <div class="card overflow-hidden">
-          ${customers.map((c, idx) => `
+          ${customers.length === 0 ? `
+            <div class="empty-state">
+              <div class="empty-icon">👥</div>
+              <div class="empty-title">No customers yet</div>
+              <div class="empty-desc">Add your first customer to start tracking credit</div>
+              <button class="btn btn-primary mt-4" onclick="App.navigate('add-customer')">+ Add Customer</button>
+            </div>
+          ` : customers.map((c, idx) => `
             <div class="list-item cust-item" data-balance="${c.balance}" onclick="App.navigate('customer-detail', {id:'${c.id}'})">
               <div class="list-item-avatar" style="background:${Utils.avatarColor(idx)};color:white">
                 ${Utils.initials(c.name)}

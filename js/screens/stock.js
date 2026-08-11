@@ -50,7 +50,14 @@ window.SCREENS['stock'] = function() {
 
         <!-- Stock Cards List -->
         <div class="flex flex-col gap-3" id="stock-list">
-          ${products.map(p => App.buildStockCard(p)).join('')}
+          ${products.length === 0 ? `
+            <div class="empty-state">
+              <div class="empty-icon">📦</div>
+              <div class="empty-title">No stock yet</div>
+              <div class="empty-desc">Add products first, then add stock to start selling</div>
+              <button class="btn btn-primary mt-4" onclick="App.navigate('add-product')">+ Add Product</button>
+            </div>
+          ` : products.map(p => App.buildStockCard(p)).join('')}
         </div>
       </div>
     </div>

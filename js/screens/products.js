@@ -72,26 +72,43 @@ window.SCREENS['products'] = function() {
 
         <!-- Products List -->
         <div class="card overflow-hidden" id="products-list-container">
-          ${products.map(p => `
-            <div class="product-list-item" 
-                 data-name="${Utils.escapeHtml(p.name)}" 
-                 data-category="${p.category}"
-                 onclick="App.navigate('product-detail', {id:'${p.id}'})">
-              <div class="product-list-emoji">${p.emoji || '📦'}</div>
-              <div class="list-item-content">
-                <div class="list-item-title">${Utils.escapeHtml(p.name)}</div>
-                <div class="flex items-center gap-2 mt-1">
-                  <span class="chip">${p.category}</span>
-                  <span class="text-xs text-muted">Stock: ${p.stock} ${p.sellingUnit}s</span>
-                </div>
-              </div>
-              <div class="list-item-right">
-                <div class="list-item-value text-primary">${Utils.formatCurrency(p.sellingPrice)}</div>
-                <div class="text-xs text-muted">per ${p.sellingUnit}</div>
-                ${Utils.stockBadge(p.status)}
-              </div>
+          ${products.length === 0 ? `
+            <div class="empty-state">
+              <div class="empty-icon">📦</div>
+              <div class="empty-title">No products yet</div>
+              <div class="empty-desc">Add your first product to start selling</div>
+              <button class="btn btn-primary mt-4" onclick="App.navigate('add-product')">+ Add Product</button>
             </div>
-          `).join('')}
+          ` : `
+            ${products.map(p => `
+             <div class="product-list-item"
+                  data-name="${Utils.escapeHtml(p.name)}"
+                  data-category="${p.category}"
+                  onclick="App.navigate('product-detail', {id:'${p.id}'})">
+               <div class="product-list-emoji">${p.emoji || '📦'}</div>
+               <div class="list-item-content">
+                 <div class="list-item-title">${Utils.escapeHtml(p.name)}</div>
+                 <div class="flex items-center gap-2 mt-1">
+                   <span class="chip">${p.category}</span>
+                   <span class="text-xs text-muted">Stock: ${p.stock} ${p.sellingUnit}s</span>
+                 </div>
+               </div>
+               <div class="list-item-right">
+                 <div class="list-item-value text-primary">${Utils.formatCurrency(p.sellingPrice)}</div>
+                 <div class="text-xs text-muted">per ${p.sellingUnit}</div>
+                 ${Utils.stockBadge(p.status)}
+               </div>
+               <div class="product-actions" onclick="event.stopPropagation()">
+                 <button class="btn btn-xs btn-ghost" onclick="App.navigate('edit-product', {id:'${p.id}'})">
+                   <i data-lucide="edit-2" style="width:14px;height:14px"></i>
+                 </button>
+                 <button class="btn btn-xs btn-ghost" onclick="App.confirmDeleteProduct('${p.id}', '${Utils.escapeHtml(p.name)}')">
+                   <i data-lucide="trash-2" style="width:14px;height:14px"></i>
+                 </button>
+               </div>
+             </div>
+            `).join('')}
+          `}
         </div>
       </div>
     </div>
@@ -293,6 +310,120 @@ window.SCREENS['product-detail'] = function(params) {
           </button>
           <button class="btn btn-secondary btn-lg" onclick="App.navigate('stock-adjustment', {productId:'${product.id}'})">
             ⚙ Adjust Stock
+          </button>
+          <button class="btn btn-outline btn-lg" onclick="App.navigate('edit-product', {id:'${product.id}'})">
+            ✏️ Edit
+          </button>
+          <button class="btn btn-outline btn-lg text-danger" onclick="App.confirmDeleteProduct('${product.id}', '${Utils.escapeHtml(product.name)}')">
+            🗑 Delete
+          </button>
+        </div>
+      </div>
+    </div>
+  `;
+ };
+
+// 4. Edit Product Screen
+window.SCREENS['edit-product'] = function(params) {
+  const product = Store.products.find(p => p.id === (params && params.id)) || Store.products[0];
+  if (!product) { App.navigate('products'); return ''; }
+
+  window.saveEditProduct = function() {
+    const name = document.getElementById('p-name').value;
+    const category = document.getElementById('p-category').value;
+    const buyingUnit = document.getElementById('p-buying-unit').value || 'Unit';
+    const sellingUnit = document.getElementById('p-selling-unit').value || 'Unit';
+    const conversion = parseInt(document.getElementById('p-conversion').value || 1);
+    const buyingPrice = parseFloat(document.getElementById('p-buying-price').value || 0);
+    const sellingPrice = parseFloat(document.getElementById('p-selling-price').value || 0);
+    const stock = parseInt(document.getElementById('p-stock').value || 0);
+    const minStock = parseInt(document.getElementById('p-min-stock').value || 5);
+
+    if (!name) { App.showToast('Please enter product name', 'error'); return; }
+
+    Store.updateProduct(product.id, { name, category, buyingUnit, sellingUnit, conversion, buyingPrice, sellingPrice, stock, minStock });
+    App.showToast('✓ Product updated!', 'success');
+    App.navigate('products');
+  };
+
+  return `
+    <div class="screen">
+      <div class="topbar">
+        <div class="topbar-back" onclick="App.goBack()">
+          <i data-lucide="arrow-left" style="width:20px;height:20px"></i> Back
+        </div>
+        <div class="topbar-title">Edit Product 📦</div>
+      </div>
+
+      <div class="screen-body max-w-xl mx-auto">
+        <div class="card card-padded mb-6">
+          <div class="form-group">
+            <label class="form-label">Product Name</label>
+            <input type="text" class="form-input" id="p-name" value="${Utils.escapeHtml(product.name)}">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Category</label>
+            <select class="form-select" id="p-category">
+              <option ${product.category === 'Food' ? 'selected' : ''}>Food</option>
+              <option ${product.category === 'Drinks' ? 'selected' : ''}>Drinks</option>
+              <option ${product.category === 'Groceries' ? 'selected' : ''}>Groceries</option>
+              <option ${product.category === 'Snacks' ? 'selected' : ''}>Snacks</option>
+              <option ${product.category === 'Personal Care' ? 'selected' : ''}>Personal Care</option>
+              <option ${product.category === 'Stationery' ? 'selected' : ''}>Stationery</option>
+              <option ${product.category === 'School Supplies' ? 'selected' : ''}>School Supplies</option>
+              <option ${product.category === 'Household' ? 'selected' : ''}>Household</option>
+              <option ${product.category === 'Hardware' ? 'selected' : ''}>Hardware</option>
+              <option ${product.category === 'Other' ? 'selected' : ''}>Other</option>
+            </select>
+          </div>
+
+          <div class="divider-label my-4">Product Units & Conversions</div>
+
+          <div class="grid grid-2 gap-3">
+            <div class="form-group">
+              <label class="form-label">Buying Unit</label>
+              <input type="text" class="form-input" id="p-buying-unit" value="${Utils.escapeHtml(product.buyingUnit || '')}">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Selling Unit</label>
+              <input type="text" class="form-input" id="p-selling-unit" value="${Utils.escapeHtml(product.sellingUnit)}">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">How many [Selling Units] in 1 [Buying Unit]?</label>
+            <input type="number" class="form-input" id="p-conversion" value="${product.conversion}">
+          </div>
+
+          <div class="divider-label my-4">Pricing</div>
+
+          <div class="grid grid-2 gap-3">
+            <div class="form-group">
+              <label class="form-label">Buying Price (UGX)</label>
+              <input type="number" class="form-input" id="p-buying-price" value="${product.buyingPrice}">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Selling Price (UGX)</label>
+              <input type="number" class="form-input font-bold text-primary" id="p-selling-price" value="${product.sellingPrice}">
+            </div>
+          </div>
+
+          <div class="divider-label my-4">Inventory</div>
+
+          <div class="grid grid-2 gap-3">
+            <div class="form-group">
+              <label class="form-label">Current Stock Quantity</label>
+              <input type="number" class="form-input" id="p-stock" value="${product.stock}">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Minimum Stock Alert Level</label>
+              <input type="number" class="form-input" id="p-min-stock" value="${product.minStock}">
+            </div>
+          </div>
+
+          <button class="btn btn-primary btn-full btn-lg mt-4" onclick="saveEditProduct()">
+            Update Product
           </button>
         </div>
       </div>

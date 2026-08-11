@@ -359,7 +359,7 @@ const App = (() => {
 
       case 'add-expense-save':
         const form = typeof data === 'string' ? JSON.parse(data) : data;
-        Store.addExpense(form.category, form.amount, form.payment, form.desc);
+        Store.addExpense(form.category, form.amount, form.payment, form.description);
         showToast('✓ Expense saved', 'success');
         navigate('expenses');
         break;
@@ -741,6 +741,30 @@ const App = (() => {
         <button class="btn btn-primary flex-1" onclick="App.closeModal();(${onConfirm})()">Confirm</button>
       </div>
     `);
+  }
+
+  function confirmDeleteProduct(productId, productName) {
+    confirm(`Delete "${productName}"? This cannot be undone.`, () => {
+      Store.deleteProduct(productId);
+      showToast('✓ Product deleted', 'success');
+      navigate('products');
+    });
+  }
+
+  function confirmDeleteExpense(expenseId, category) {
+    confirm(`Delete "${category}" expense? This cannot be undone.`, () => {
+      Store.deleteExpense(expenseId);
+      showToast('✓ Expense deleted', 'success');
+      navigate('expenses');
+    });
+  }
+
+  function confirmDeleteSale(saleId) {
+    confirm('Delete this sale? Stock will be restored.', () => {
+      Store.deleteSale(saleId);
+      showToast('✓ Sale deleted', 'success');
+      navigate('home');
+    });
   }
 
   // ── Search Handler ────────────────────────────────────────

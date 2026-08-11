@@ -134,7 +134,14 @@ window.SCREENS['home'] = function() {
         </div>
 
         <div class="card overflow-hidden">
-          ${recentSales.map(s => App.buildSaleListItem(s)).join('')}
+          ${recentSales.length === 0 ? `
+            <div class="empty-state">
+              <div class="empty-icon">🧾</div>
+              <div class="empty-title">No sales yet today</div>
+              <div class="empty-desc">Start selling by adding products and making sales</div>
+              <button class="btn btn-primary mt-4" onclick="App.navigate('sell')">Start Selling</button>
+            </div>
+          ` : recentSales.map(s => App.buildSaleListItem(s)).join('')}
         </div>
       </div>
     </div>

@@ -29,7 +29,14 @@ window.SCREENS['suppliers'] = function() {
         </div>
 
         <div class="card overflow-hidden">
-          ${suppliers.map((s, idx) => `
+          ${suppliers.length === 0 ? `
+            <div class="empty-state">
+              <div class="empty-icon">🏭</div>
+              <div class="empty-title">No suppliers yet</div>
+              <div class="empty-desc">Add your first supplier to track purchases</div>
+              <button class="btn btn-primary mt-4" onclick="App.showToast('Supplier add coming soon', 'info')">+ Add Supplier</button>
+            </div>
+          ` : suppliers.map((s, idx) => `
             <div class="list-item" onclick="App.navigate('supplier-detail', {id:'${s.id}'})">
               <div class="list-item-avatar" style="background:${Utils.avatarColor(idx)};color:white">
                 🏭

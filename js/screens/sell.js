@@ -40,7 +40,14 @@ window.SCREENS['sell'] = function() {
 
         <!-- Product Cards Grid -->
         <div class="product-grid" id="product-grid">
-          ${products.map(p => App.buildProductCard(p)).join('')}
+          ${products.length === 0 ? `
+            <div class="empty-state col-span-full">
+              <div class="empty-icon">🛒</div>
+              <div class="empty-title">No products to sell</div>
+              <div class="empty-desc">Add products in the Products screen first</div>
+              <button class="btn btn-primary mt-4" onclick="App.navigate('products')">+ Add Products</button>
+            </div>
+          ` : products.map(p => App.buildProductCard(p)).join('')}
         </div>
       </div>
 
