@@ -815,7 +815,7 @@ const App = (() => {
 window.App = App;
 
 // Register window.SCREEN_HOOKS
-window.SCREEN_HOOKS = {};
+window.SCREEN_HOOKS = window.SCREEN_HOOKS || {};
 
 // Initialize app when DOM is ready
 document.addEventListener('DOMContentLoaded', () => {

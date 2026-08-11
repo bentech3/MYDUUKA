@@ -2,6 +2,8 @@
    MYDUUKA — UTILITY FUNCTIONS
    ============================================================ */
 
+window.SCREEN_HOOKS = window.SCREEN_HOOKS || {};
+
 const Utils = {
   /** Format number as UGX currency */
   formatCurrency(amount) {

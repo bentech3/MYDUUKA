@@ -11,6 +11,4 @@ const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
   },
 });
 
-export default supabaseClient;
-window.Supabase = supabaseClient;
 window.Supabase = supabaseClient;
