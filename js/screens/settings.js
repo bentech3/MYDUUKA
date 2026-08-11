@@ -94,34 +94,60 @@ window.SCREENS['shop-profile'] = function() {
         <div class="card card-padded mb-6">
           <div class="form-group">
             <label class="form-label">Shop Name</label>
-            <input type="text" class="form-input" value="Bentech Mini Mart">
+            <input type="text" class="form-input" id="sp-shop-name" value="${App.state.user?.shopName || 'Bentech Mini Mart'}">
           </div>
 
           <div class="form-group">
             <label class="form-label">Owner Name</label>
-            <input type="text" class="form-input" value="Benedict Okello">
+            <input type="text" class="form-input" id="sp-owner-name" value="${App.state.user?.name || 'Benedict Okello'}">
           </div>
 
           <div class="form-group">
             <label class="form-label">Phone Number</label>
-            <input type="text" class="form-input" value="0761 214 808 / 0794 979 060">
+            <input type="text" class="form-input" id="sp-phone" value="${App.state.user?.phone || ''}">
           </div>
 
           <div class="form-group">
             <label class="form-label">Location / Address</label>
-            <input type="text" class="form-input" value="Nakawa Market, Kampala">
+            <input type="text" class="form-input" id="sp-location" value="Nakawa Market, Kampala">
           </div>
 
-          <button class="btn btn-primary btn-full btn-lg mt-4" onclick="
-            App.showToast('✓ Shop profile updated!', 'success');
-            App.goBack();
-          ">
+          <button class="btn btn-primary btn-full btn-lg mt-4" onclick="saveShopProfile()">
             Save Profile
           </button>
         </div>
       </div>
     </div>
   `;
+};
+
+window.saveShopProfile = function() {
+  const shopName = document.getElementById('sp-shop-name').value;
+  const ownerName = document.getElementById('sp-owner-name').value;
+  const phone = document.getElementById('sp-phone').value;
+  const location = document.getElementById('sp-location').value;
+
+  if (!shopName || !ownerName) {
+    App.showToast('Please fill in shop name and owner name', 'error');
+    return;
+  }
+
+  // Update local state
+  App.state.user.name = ownerName;
+  App.state.user.phone = phone;
+
+  // Update Supabase if connected
+  if (window.Supabase && App.state.user?.shopId) {
+    window.Supabase.from('shops').update({ name: shopName, location }).eq('id', App.state.user.shopId).then(({ error }) => {
+      if (error) console.warn('Shop update failed:', error);
+    });
+    window.Supabase.from('profiles').update({ name: ownerName, phone }).eq('id', App.state.user.id).then(({ error }) => {
+      if (error) console.warn('Profile update failed:', error);
+    });
+  }
+
+  App.showToast('✓ Shop profile updated!', 'success');
+  App.goBack();
 };
 
 // 3. Product Categories Settings

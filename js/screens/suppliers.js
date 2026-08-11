@@ -50,6 +50,14 @@ window.SCREENS['suppliers'] = function() {
               </div>
               <div class="list-item-right">
                 <i data-lucide="chevron-right" class="list-chevron"></i>
+                <div class="flex gap-1 mt-1">
+                  <button class="btn btn-xs btn-ghost" onclick="App.navigate('edit-supplier', {id:'${s.id}'})">
+                    <i data-lucide="edit-2" style="width:14px;height:14px"></i>
+                  </button>
+                  <button class="btn btn-xs btn-ghost" onclick="App.confirmDeleteSupplier('${s.id}', '${Utils.escapeHtml(s.name)}')">
+                    <i data-lucide="trash-2" style="width:14px;height:14px"></i>
+                  </button>
+                </div>
               </div>
             </div>
           `).join('')}
@@ -170,6 +178,73 @@ window.SCREENS['purchases'] = function() {
               </div>
             </div>
           `).join('')}
+        </div>
+
+        <div class="grid grid-2 gap-3 mb-6">
+          <button class="btn btn-outline btn-lg" onclick="App.navigate('edit-supplier', {id:'${supplier.id}'})">
+            ✏️ Edit
+          </button>
+          <button class="btn btn-outline btn-lg text-danger" onclick="App.confirmDeleteSupplier('${supplier.id}', '${Utils.escapeHtml(supplier.name)}')">
+            🗑 Delete
+          </button>
+        </div>
+      </div>
+    </div>
+  `;
+};
+
+// 4. Edit Supplier Screen
+window.SCREENS['edit-supplier'] = function(params) {
+  const supplier = Store.suppliers.find(s => s.id === (params && params.id)) || Store.suppliers[0];
+  if (!supplier) { App.navigate('suppliers'); return ''; }
+
+  window.saveEditSupplier = function() {
+    const name = document.getElementById('sup-name').value;
+    const phone = document.getElementById('sup-phone').value;
+    const location = document.getElementById('sup-location').value;
+    const contact = document.getElementById('sup-contact').value;
+
+    if (!name) { App.showToast('Please enter supplier name', 'error'); return; }
+
+    Store.updateSupplier(supplier.id, { name, phone, location, contact });
+    App.showToast('✓ Supplier updated!', 'success');
+    App.navigate('suppliers');
+  };
+
+  return `
+    <div class="screen">
+      <div class="topbar">
+        <div class="topbar-back" onclick="App.goBack()">
+          <i data-lucide="arrow-left" style="width:20px;height:20px"></i> Back
+        </div>
+        <div class="topbar-title">Edit Supplier 🏭</div>
+      </div>
+
+      <div class="screen-body max-w-xl mx-auto">
+        <div class="card card-padded mb-6">
+          <div class="form-group">
+            <label class="form-label">Supplier Name</label>
+            <input type="text" class="form-input" id="sup-name" value="${Utils.escapeHtml(supplier.name)}">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Phone Number</label>
+            <input type="text" class="form-input" id="sup-phone" value="${Utils.escapeHtml(supplier.phone || '')}">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Location</label>
+            <input type="text" class="form-input" id="sup-location" value="${Utils.escapeHtml(supplier.location || '')}">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Contact Person</label>
+            <input type="text" class="form-input" id="sup-contact" value="${Utils.escapeHtml(supplier.contact || '')}">
+          </div>
+
+          <button class="btn btn-primary btn-full btn-lg mt-4" onclick="saveEditSupplier()">
+            Update Supplier
+          </button>
         </div>
       </div>
     </div>

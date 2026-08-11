@@ -767,6 +767,22 @@ const App = (() => {
     });
   }
 
+  function confirmDeleteCustomer(customerId, customerName) {
+    confirm(`Delete customer "${customerName}"? This cannot be undone.`, () => {
+      Store.deleteCustomer(customerId);
+      showToast('✓ Customer deleted', 'success');
+      navigate('customers');
+    });
+  }
+
+  function confirmDeleteSupplier(supplierId, supplierName) {
+    confirm(`Delete supplier "${supplierName}"? This cannot be undone.`, () => {
+      Store.deleteSupplier(supplierId);
+      showToast('✓ Supplier deleted', 'success');
+      navigate('suppliers');
+    });
+  }
+
   // ── Search Handler ────────────────────────────────────────
   function setupSearch(inputId, onSearch) {
     const el = document.getElementById(inputId);

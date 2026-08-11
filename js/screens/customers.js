@@ -64,6 +64,14 @@ window.SCREENS['customers'] = function() {
                 <div class="list-item-value ${c.balance > 0 ? 'text-danger' : 'text-success'}">
                   ${c.balance > 0 ? `Owes ${Utils.formatCurrency(c.balance)}` : '✓ Cleared'}
                 </div>
+                <div class="flex gap-1 mt-1">
+                  <button class="btn btn-xs btn-ghost" onclick="App.navigate('edit-customer', {id:'${c.id}'})">
+                    <i data-lucide="edit-2" style="width:14px;height:14px"></i>
+                  </button>
+                  <button class="btn btn-xs btn-ghost" onclick="App.confirmDeleteCustomer('${c.id}', '${Utils.escapeHtml(c.name)}')">
+                    <i data-lucide="trash-2" style="width:14px;height:14px"></i>
+                  </button>
+                </div>
               </div>
             </div>
           `).join('')}
@@ -104,6 +112,14 @@ window.SCREENS['customer-detail'] = function(params) {
           <button class="btn btn-success btn-full btn-lg" onclick="App.navigate('receive-payment', {customerId:'${customer.id}'})">
             💰 Collect Debt Payment
           </button>
+          <div class="grid grid-2 gap-3 mt-3">
+            <button class="btn btn-outline" onclick="App.navigate('edit-customer', {id:'${customer.id}'})">
+              ✏️ Edit
+            </button>
+            <button class="btn btn-outline text-danger" onclick="App.confirmDeleteCustomer('${customer.id}', '${Utils.escapeHtml(customer.name)}')">
+              🗑 Delete
+            </button>
+          </div>
         </div>
 
         <div class="section-header">
@@ -240,8 +256,65 @@ window.SCREENS['add-customer'] = function() {
             <textarea class="form-textarea" id="cust-notes" placeholder="e.g. Pays at end of every month"></textarea>
           </div>
 
-          <button class="btn btn-primary btn-full btn-lg mt-4" onclick="saveCustomerForm()">
-            Save Customer
+           <button class="btn btn-primary btn-full btn-lg mt-4" onclick="saveCustomerForm()">
+             Save Customer
+           </button>
+         </div>
+       </div>
+     </div>
+   `;
+ };
+
+// 4. Edit Customer Screen
+window.SCREENS['edit-customer'] = function(params) {
+  const customer = Store.customers.find(c => c.id === (params && params.id)) || Store.customers[0];
+  if (!customer) { App.navigate('customers'); return ''; }
+
+  window.saveEditCustomer = function() {
+    const name = document.getElementById('cust-name').value;
+    const phone = document.getElementById('cust-phone').value;
+    const notes = document.getElementById('cust-notes').value;
+
+    if (!name) { App.showToast('Please enter customer name', 'error'); return; }
+
+    Store.updateCustomer(customer.id, { name, phone, notes });
+    App.showToast('✓ Customer updated!', 'success');
+    App.navigate('customers');
+  };
+
+  return `
+    <div class="screen">
+      <div class="topbar">
+        <div class="topbar-back" onclick="App.goBack()">
+          <i data-lucide="arrow-left" style="width:20px;height:20px"></i> Back
+        </div>
+        <div class="topbar-title">Edit Customer 👤</div>
+      </div>
+
+      <div class="screen-body max-w-xl mx-auto">
+        <div class="card card-padded mb-6">
+          <div class="form-group">
+            <label class="form-label">Customer Name</label>
+            <input type="text" class="form-input" id="cust-name" value="${Utils.escapeHtml(customer.name)}">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Phone Number</label>
+            <input type="text" class="form-input" id="cust-phone" value="${Utils.escapeHtml(customer.phone || '')}">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Notes (Optional)</label>
+            <textarea class="form-textarea" id="cust-notes">${Utils.escapeHtml(customer.notes || '')}</textarea>
+          </div>
+
+          <div class="alert-banner alert-banner-info mb-4">
+            <i data-lucide="info" style="width:20px;height:20px"></i>
+            <div>Current balance: <strong>${Utils.formatCurrency(customer.balance)}</strong></div>
+          </div>
+
+          <button class="btn btn-primary btn-full btn-lg mt-4" onclick="saveEditCustomer()">
+            Update Customer
           </button>
         </div>
       </div>

@@ -82,7 +82,15 @@ const Store = (() => {
 
     receiveCreditPayment(customerId, amount, method) { const cust = customers.find(c => c.id === customerId); if (!cust) return; cust.balance = Math.max(0, cust.balance - amount); cust.lastTx = new Date(); cust.transactions.push({ date: new Date(), type: 'payment', amount, description: method }); activityLog.unshift({ id: Utils.uid(), user: App.state.user?.name || 'Benedict O.', action: 'Received payment', detail: `${cust.name} paid ${Utils.formatCurrency(amount)}`, time: new Date(), type: 'payment' }); saveToStorage(); addToSyncQueue('payment', { customerId, amount, method }); },
 
-    addCustomer(name, phone, notes = '') { const cust = { id: Utils.uid(), name, phone, balance: 0, lastTx: new Date(), notes, transactions: [] }; customers.push(cust); return cust; },
+    addCustomer(name, phone, notes = '') { const cust = { id: Utils.uid(), name, phone, balance: 0, lastTx: new Date(), notes, transactions: [] }; customers.push(cust); saveToStorage(); addToSyncQueue('customer', cust); return cust; },
+
+    updateCustomer(customerId, updates) { const idx = customers.findIndex(c => c.id === customerId); if (idx === -1) return null; customers[idx] = { ...customers[idx], ...updates }; saveToStorage(); addToSyncQueue('update_customer', { id: customerId, updates }); return customers[idx]; },
+
+    deleteCustomer(customerId) { const idx = customers.findIndex(c => c.id === customerId); if (idx === -1) return; customers.splice(idx, 1); saveToStorage(); addToSyncQueue('delete_customer', { id: customerId }); },
+
+    updateSupplier(supplierId, updates) { const idx = suppliers.findIndex(s => s.id === supplierId); if (idx === -1) return null; suppliers[idx] = { ...suppliers[idx], ...updates }; saveToStorage(); addToSyncQueue('update_supplier', { id: supplierId, updates }); return suppliers[idx]; },
+
+    deleteSupplier(supplierId) { const idx = suppliers.findIndex(s => s.id === supplierId); if (idx === -1) return; suppliers.splice(idx, 1); saveToStorage(); addToSyncQueue('delete_supplier', { id: supplierId }); },
 
     addProduct(data) { const product = { id: Utils.uid(), ...data, status: Utils.stockStatus(data.stock || 0, data.minStock || 0) }; products.push(product); saveToStorage(); addToSyncQueue('product', product); return product; },
 
