@@ -5,16 +5,8 @@
 
 window.SCREENS = window.SCREENS || {};
 
-// 1. Splash Screen
+// 1. Splash / Welcome Screen
 window.SCREENS['splash'] = function() {
-  setTimeout(() => {
-    if (window.Supabase && window.Supabase.auth && window.Supabase.auth.getSession()) {
-      App.navigate('home');
-    } else {
-      App.navigate('login');
-    }
-  }, 2200);
-
   return `
     <div class="splash-screen">
       <div class="splash-bg-circle-1"></div>
@@ -28,11 +20,13 @@ window.SCREENS['splash'] = function() {
         <div class="splash-brand splash-text">MYDUUKA</div>
         <div class="splash-tagline splash-subtitle">Your simple digital shop assistant</div>
 
-        <div class="splash-loader">
-          <div class="splash-progress">
-            <div class="splash-progress-fill" style="width:100%"></div>
-          </div>
-          <div class="text-xs text-white opacity-75">Loading Bentech Mini Mart...</div>
+        <div class="splash-loader" style="margin-top:var(--space-8)">
+          <button class="btn btn-surface btn-full" style="background:rgba(255,255,255,0.15);color:white;border:1px solid rgba(255,255,255,0.3)" onclick="App.navigate('login')">
+            Log In
+          </button>
+          <button class="btn btn-primary btn-full" onclick="App.navigate('onboarding-1')">
+            Set Up New Shop
+          </button>
         </div>
       </div>
       
