@@ -10,8 +10,8 @@ const App = (() => {
     params: {},
     previousScreen: null,
     isOnline: true,
-    user: { id: 'u1', name: 'Benedict Okello', role: 'Owner', initials: 'BO', color: '#1A6B4A' },
-    shopName: 'Bentech Mini Mart',
+    user: { id: 'u1', name: 'Benedict Ahumuza', role: 'Owner', initials: 'BA', color: '#1A6B4A' },
+    shopName: 'Bentech Computers UG',
     lastSale: null,
     screenHistory: [],
   };
@@ -82,8 +82,8 @@ const App = (() => {
           </div>
         </div>
         <div class="sidebar-shop" id="sidebar-shop-info">
-          <div class="sidebar-shop-name">Bentech Mini Mart</div>
-          <div class="sidebar-shop-type">Retail Shop · Kampala</div>
+          <div class="sidebar-shop-name">Bentech Computers UG</div>
+          <div class="sidebar-shop-type">Computers · Rutooma, Mbarara</div>
         </div>
         <nav class="sidebar-nav" id="sidebar-nav">
           ${buildSidebarNav()}
@@ -92,7 +92,7 @@ const App = (() => {
           <div class="sidebar-user" onclick="App.navigate('settings')">
             <div class="sidebar-avatar" style="background: #1A6B4A">BO</div>
             <div>
-              <div class="sidebar-user-name">Benedict Okello</div>
+              <div class="sidebar-user-name">Benedict Ahumuza</div>
               <div class="sidebar-user-role">Owner</div>
             </div>
           </div>

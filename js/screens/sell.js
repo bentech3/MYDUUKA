@@ -240,7 +240,7 @@ window.SCREENS['receipt'] = function(params) {
             <div class="receipt-logo">MYDUUKA</div>
             <div class="receipt-shop">BENTECH MINI MART</div>
             <div class="receipt-meta">
-              Nakawa Market, Kampala<br>
+              Rutooma, Mbarara, Uganda<br>
               Tel: 0761 214 808 / 0794 979 060<br>
               Date: ${Utils.formatDate(sale.time)} ${Utils.formatTime(sale.time)}
             </div>

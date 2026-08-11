@@ -197,12 +197,12 @@ window.SCREENS['onboarding-2'] = function() {
       <div class="onboarding-body">
         <div class="form-group">
           <label class="form-label">Shop Name</label>
-          <input type="text" class="form-input" id="ob-shop-name" value="Bentech Mini Mart">
+          <input type="text" class="form-input" id="ob-shop-name" value="Bentech Computers UG">
         </div>
 
         <div class="form-group">
           <label class="form-label">Owner Name</label>
-          <input type="text" class="form-input" id="ob-owner-name" value="Benedict Okello">
+          <input type="text" class="form-input" id="ob-owner-name" value="Benedict Ahumuza">
         </div>
 
         <div class="form-group">
@@ -212,7 +212,7 @@ window.SCREENS['onboarding-2'] = function() {
 
         <div class="form-group">
           <label class="form-label">Location</label>
-          <input type="text" class="form-input" id="ob-location" value="Nakawa Market, Kampala">
+          <input type="text" class="form-input" id="ob-location" value="Rutooma, Mbarara, Uganda">
         </div>
 
         <div class="form-group">
@@ -297,7 +297,7 @@ window.SCREENS['onboarding-4'] = function() {
         </div>
         <h2 class="text-2xl font-extrabold mb-2">Your Shop is Ready!</h2>
         <p class="text-sm text-muted max-w-xs mb-6">
-          We have pre-loaded sample Ugandan products and demo sales for Bentech Mini Mart so you can explore immediately.
+          We have pre-loaded sample Ugandan products and demo sales for Bentech Computers UG so you can explore immediately.
         </p>
 
         <button class="btn btn-primary btn-full btn-xl shadow-lg" onclick="App.navigate('home')">

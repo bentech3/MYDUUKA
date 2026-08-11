@@ -20,7 +20,7 @@ window.SCREENS['settings'] = function() {
             <div class="settings-item-icon bg-primary-100 text-primary-700">🏪</div>
             <div class="settings-item-content">
               <div class="settings-item-title">Shop Profile</div>
-              <div class="settings-item-sub">Bentech Mini Mart · Nakawa</div>
+               <div class="settings-item-sub">Bentech Computers UG · Rutooma</div>
             </div>
             <i data-lucide="chevron-right" class="list-chevron"></i>
           </div>
@@ -72,7 +72,7 @@ window.SCREENS['settings'] = function() {
 
         <div class="text-center text-xs text-muted my-6">
           MYDUUKA v1.0.0 · Made for Uganda 🇺🇬<br>
-          Connected as Benedict Okello (Owner)
+          Connected as Benedict Ahumuza (Owner)
         </div>
       </div>
     </div>
@@ -94,12 +94,12 @@ window.SCREENS['shop-profile'] = function() {
         <div class="card card-padded mb-6">
           <div class="form-group">
             <label class="form-label">Shop Name</label>
-            <input type="text" class="form-input" id="sp-shop-name" value="${App.state.user?.shopName || 'Bentech Mini Mart'}">
+            <input type="text" class="form-input" id="sp-shop-name" value="${App.state.user?.shopName || 'Bentech Computers UG'}">
           </div>
 
           <div class="form-group">
             <label class="form-label">Owner Name</label>
-            <input type="text" class="form-input" id="sp-owner-name" value="${App.state.user?.name || 'Benedict Okello'}">
+            <input type="text" class="form-input" id="sp-owner-name" value="${App.state.user?.name || 'Benedict Ahumuza'}">
           </div>
 
           <div class="form-group">
@@ -109,7 +109,7 @@ window.SCREENS['shop-profile'] = function() {
 
           <div class="form-group">
             <label class="form-label">Location / Address</label>
-            <input type="text" class="form-input" id="sp-location" value="Nakawa Market, Kampala">
+            <input type="text" class="form-input" id="sp-location" value="Rutooma, Mbarara, Uganda">
           </div>
 
           <button class="btn btn-primary btn-full btn-lg mt-4" onclick="saveShopProfile()">

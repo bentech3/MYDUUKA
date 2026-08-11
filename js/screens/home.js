@@ -16,7 +16,7 @@ window.SCREENS['home'] = function() {
         <div class="flex items-center justify-between">
           <div>
             <div class="dashboard-greeting">${Utils.getGreeting()},</div>
-            <div class="dashboard-shop-name">Bentech Mini Mart</div>
+            <div class="dashboard-shop-name">Bentech Computers UG</div>
             <div class="dashboard-date">${Utils.formatDateShort(new Date())}</div>
           </div>
           <div class="flex items-center gap-3">
