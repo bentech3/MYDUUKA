@@ -62,14 +62,19 @@ self.addEventListener('activate', (event) => {
 
 // Fetch Event — Cache-First Strategy for offline availability
 self.addEventListener('fetch', (event) => {
+  const requestUrl = new URL(event.request.url);
+
+  // Ignore extension/internal browser requests and non-GET requests.
+  if (event.request.method !== 'GET') return;
+  if (!['http:', 'https:'].includes(requestUrl.protocol)) return;
+  if (requestUrl.protocol === 'chrome-extension:') return;
+
   event.respondWith(
     caches.match(event.request).then((cachedResponse) => {
       if (cachedResponse) {
-        // Return cached version immediately
         return cachedResponse;
       }
 
-      // If not in cache, fetch from network and add to cache
       return fetch(event.request).then((networkResponse) => {
         if (!networkResponse || networkResponse.status !== 200 || networkResponse.type !== 'basic') {
           return networkResponse;
@@ -86,10 +91,11 @@ self.addEventListener('fetch', (event) => {
 
         return networkResponse;
       }).catch(() => {
-        // If offline and request is for a page, return cached index.html
-        if (event.request.headers.get('accept').includes('text/html')) {
+        const acceptHeader = event.request.headers.get('accept') || '';
+        if (acceptHeader.includes('text/html')) {
           return caches.match('./index.html');
         }
+        return Response.error();
       });
     })
   );

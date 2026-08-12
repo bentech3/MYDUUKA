@@ -6,12 +6,12 @@
 const App = (() => {
   // ── App State ─────────────────────────────────────────────
   const state = {
-    currentScreen: 'splash',
+    currentScreen: 'login',
     params: {},
     previousScreen: null,
     isOnline: true,
-    user: { id: 'u1', name: 'Benedict Ahumuza', role: 'Owner', initials: 'BA', color: '#1A6B4A' },
-    shopName: 'Bentech Computers UG',
+    user: { id: null, name: '', role: 'Owner', initials: 'ME', color: '#1A6B4A' },
+    shopName: 'My Shop',
     lastSale: null,
     screenHistory: [],
   };
@@ -68,8 +68,8 @@ const App = (() => {
       if (e.state && e.state.screen) navigate(e.state.screen, e.state.params, true);
     });
 
-    // Navigate to splash
-    navigate('splash');
+    // Start on auth page
+    navigate('login');
   }
 
   function updateMainMargin() {
@@ -86,24 +86,20 @@ const App = (() => {
       <!-- Sidebar (Desktop) -->
       <nav class="sidebar" id="app-sidebar">
         <div class="sidebar-brand">
-          <div class="sidebar-logo">M</div>
-          <div class="sidebar-brand-text">
-            <div class="app-name">MYDUUKA</div>
-            <div class="app-tagline">Simple Shop Assistant</div>
-          </div>
+          <img src="assets/logo.svg" alt="MYDUUKA" style="width: 122px; height: auto; display: block; filter: drop-shadow(0 6px 12px rgba(0,0,0,0.18));">
         </div>
         <div class="sidebar-shop" id="sidebar-shop-info">
-          <div class="sidebar-shop-name">Bentech Computers UG</div>
-          <div class="sidebar-shop-type">Computers · Rutooma, Mbarara</div>
+          <div class="sidebar-shop-name">My Shop</div>
+          <div class="sidebar-shop-type">Add your shop details</div>
         </div>
         <nav class="sidebar-nav" id="sidebar-nav">
           ${buildSidebarNav()}
         </nav>
         <div class="sidebar-footer">
           <div class="sidebar-user" onclick="App.navigate('settings')">
-            <div class="sidebar-avatar" style="background: #1A6B4A">BO</div>
+            <div class="sidebar-avatar" style="background: #1A6B4A">ME</div>
             <div>
-              <div class="sidebar-user-name">Benedict Ahumuza</div>
+              <div class="sidebar-user-name">My Account</div>
               <div class="sidebar-user-role">Owner</div>
             </div>
           </div>

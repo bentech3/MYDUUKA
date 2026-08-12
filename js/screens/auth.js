@@ -14,11 +14,8 @@ window.SCREENS['splash'] = function() {
       <div class="splash-bg-circle-3"></div>
       
       <div class="splash-content">
-        <div class="splash-logo-mark splash-logo">
-          <span style="font-size:48px;font-weight:800;color:white">M</span>
-        </div>
-        <div class="splash-brand splash-text">MYDUUKA</div>
-        <div class="splash-tagline splash-subtitle">Your simple digital shop assistant</div>
+        <img src="assets/logo.svg" alt="MYDUUKA logo" style="width: 260px; max-width: 78vw; display: block; margin: 0 auto 12px; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.18));">
+        <div class="splash-tagline splash-subtitle" style="margin-top: 10px;">Your simple digital shop assistant</div>
 
         <div class="splash-loader" style="margin-top:var(--space-8)">
           <button class="btn btn-surface btn-full" style="background:rgba(255,255,255,0.15);color:white;border:1px solid rgba(255,255,255,0.3)" onclick="App.navigate('login')">
@@ -197,22 +194,22 @@ window.SCREENS['onboarding-2'] = function() {
       <div class="onboarding-body">
         <div class="form-group">
           <label class="form-label">Shop Name</label>
-          <input type="text" class="form-input" id="ob-shop-name" value="Bentech Computers UG">
+          <input type="text" class="form-input" id="ob-shop-name" value="">
         </div>
 
         <div class="form-group">
           <label class="form-label">Owner Name</label>
-          <input type="text" class="form-input" id="ob-owner-name" value="Benedict Ahumuza">
+          <input type="text" class="form-input" id="ob-owner-name" value="">
         </div>
 
         <div class="form-group">
           <label class="form-label">Phone Number</label>
-          <input type="text" class="form-input" id="ob-phone" value="0772 123 456">
+          <input type="text" class="form-input" id="ob-phone" value="">
         </div>
 
         <div class="form-group">
           <label class="form-label">Location</label>
-          <input type="text" class="form-input" id="ob-location" value="Rutooma, Mbarara, Uganda">
+          <input type="text" class="form-input" id="ob-location" value="">
         </div>
 
         <div class="form-group">
@@ -297,7 +294,7 @@ window.SCREENS['onboarding-4'] = function() {
         </div>
         <h2 class="text-2xl font-extrabold mb-2">Your Shop is Ready!</h2>
         <p class="text-sm text-muted max-w-xs mb-6">
-          We have pre-loaded sample Ugandan products and demo sales for Bentech Computers UG so you can explore immediately.
+          Your shop is ready. Add your own products, suppliers, customers, and sales records from here.
         </p>
 
         <button class="btn btn-primary btn-full btn-xl shadow-lg" onclick="App.navigate('home')">

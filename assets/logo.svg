@@ -1,0 +1,21 @@
+<svg width="900" height="520" viewBox="0 0 900 520" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <g transform="translate(60 40)">
+    <path d="M130 250L130 120C130 99.0132 147.013 82 168 82H260C316.274 82 362 127.726 362 184V184C362 240.274 316.274 286 260 286H188C176.954 286 168 294.954 168 306V354C168 365.046 176.954 374 188 374H326" stroke="#F2C94C" stroke-width="18" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M178 190H258C275.673 190 290 204.327 290 222V222C290 239.673 275.673 254 258 254H178" stroke="#F2C94C" stroke-width="18" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M340 90L432 90" stroke="#F2C94C" stroke-width="18" stroke-linecap="round"/>
+    <path d="M420 90L474 90L514 134" stroke="#F2C94C" stroke-width="18" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M454 170L540 170" stroke="#F2C94C" stroke-width="18" stroke-linecap="round"/>
+    <path d="M574 156C574 128.386 596.386 106 624 106H624C651.614 106 674 128.386 674 156V156C674 183.614 651.614 206 624 206H624C596.386 206 574 183.614 574 156V156Z" stroke="#F2C94C" stroke-width="18"/>
+    <path d="M700 162C700 134.386 722.386 112 750 112H750C777.614 112 800 134.386 800 162V162C800 189.614 777.614 212 750 212H750C722.386 212 700 189.614 700 162V162Z" stroke="#F2C94C" stroke-width="18"/>
+    <circle cx="420" cy="352" r="28" fill="#F2C94C"/>
+    <circle cx="660" cy="352" r="28" fill="#F2C94C"/>
+    <path d="M420 352H660" stroke="#F2C94C" stroke-width="18" stroke-linecap="round"/>
+    <rect x="90" y="112" width="110" height="116" rx="18" fill="#F2C94C" opacity="0.12"/>
+  </g>
+
+  <g>
+    <text x="360" y="320" font-size="196" font-weight="900" font-family="Arial, Helvetica, sans-serif" fill="#F7F7F7">All</text>
+    <text x="565" y="320" font-size="196" font-weight="900" font-family="Arial, Helvetica, sans-serif" fill="#F7F7F7">in</text>
+    <text x="418" y="395" font-size="58" font-weight="700" font-family="Arial, Helvetica, sans-serif" fill="#F2C94C" letter-spacing="1">all you need</text>
+  </g>
+</svg>
