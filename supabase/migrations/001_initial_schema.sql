@@ -72,7 +72,7 @@ create table public.customer_transactions (
   date timestamptz default now(),
   type text not null,
   amount numeric not null,
-  desc text,
+  description text,
   sale_id uuid
 );
 

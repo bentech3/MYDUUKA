@@ -377,21 +377,187 @@ ALTER PUBLICATION supabase_realtime ADD TABLE public.customers;
 ALTER PUBLICATION supabase_realtime ADD TABLE public.expenses;
 ALTER PUBLICATION supabase_realtime ADD TABLE public.stock_movements;
 
--- ── Sample default status update helper ───────────────────────────
-CREATE OR REPLACE FUNCTION public.refresh_product_status(p_product_id uuid)
-RETURNS void
+-- ── Bootstrap functions ─────────────────────────────────────────
+CREATE OR REPLACE FUNCTION public.bootstrap_shop(
+  p_owner_id uuid,
+  p_shop_name text,
+  p_owner_name text default null,
+  p_phone text default null,
+  p_location text default null,
+  p_currency text default 'UGX',
+  p_shop_type text default 'Retail Shop'
+)
+RETURNS public.shops
 LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
 AS $$
+DECLARE
+  v_slug text;
+  v_shop public.shops;
 BEGIN
-  UPDATE public.products
-  SET status = CASE
-    WHEN stock <= 0 THEN 'out'
-    WHEN stock <= min_stock THEN 'low'
-    ELSE 'good'
-  END,
-      updated_at = now()
-  WHERE id = p_product_id;
+  v_slug := lower(regexp_replace(p_shop_name, '[^a-z0-9]+', '-', 'g'));
+  v_slug := trim(both '-' from v_slug);
+  IF v_slug = '' THEN
+    v_slug := 'myduuka-shop';
+  END IF;
+
+  INSERT INTO public.shops (name, slug, shop_type, location, currency, owner_id)
+  VALUES (p_shop_name, v_slug, p_shop_type, coalesce(p_location, 'Kampala'), p_currency, p_owner_id)
+  ON CONFLICT (slug) DO NOTHING
+  RETURNING * INTO v_shop;
+
+  IF v_shop.id IS NULL THEN
+    SELECT id INTO v_shop.id
+    FROM public.shops
+    WHERE owner_id = p_owner_id
+    LIMIT 1;
+  END IF;
+
+  INSERT INTO public.profiles (id, shop_id, name, phone, role, color, active)
+  VALUES (
+    p_owner_id,
+    v_shop.id,
+    coalesce(p_owner_name, 'Shop Owner'),
+    p_phone,
+    'Owner',
+    '#1A6B4A',
+    true
+  )
+  ON CONFLICT (id) DO UPDATE
+  SET shop_id = excluded.shop_id,
+      name = excluded.name,
+      phone = excluded.phone,
+      role = excluded.role,
+      color = excluded.color,
+      active = true;
+
+  RETURN v_shop;
 END;
 $$;
 
--- End of reset migration
+CREATE OR REPLACE FUNCTION public.seed_demo_products(p_shop_id uuid)
+RETURNS void
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+BEGIN
+  INSERT INTO public.products (
+    shop_id, name, category, emoji, buying_unit, selling_unit, conversion,
+    buying_price, selling_price, stock, min_stock, status, brand, barcode
+  ) VALUES
+    (p_shop_id, 'HP Laptop 15', 'Electronics', '💻', 'piece', 'piece', 1, 650000, 980000, 8, 2, 'good', 'HP', 'HP-LAP-15'),
+    (p_shop_id, 'Dell Mouse', 'Accessories', '🖱️', 'piece', 'piece', 1, 15000, 25000, 18, 5, 'good', 'Dell', 'D-ML-01'),
+    (p_shop_id, 'USB Cable', 'Accessories', '🔌', 'piece', 'piece', 1, 8000, 12000, 30, 10, 'good', 'Generic', 'USB-001'),
+    (p_shop_id, 'Office Chair', 'Furniture', '🪑', 'piece', 'piece', 1, 180000, 260000, 4, 2, 'good', 'Flex', 'CHAIR-09'),
+    (p_shop_id, 'Printer Ink', 'Supplies', '🖨️', 'pack', 'pack', 1, 70000, 95000, 7, 3, 'good', 'Canon', 'INK-PRN'),
+    (p_shop_id, 'Monitor 24', 'Electronics', '🖥️', 'piece', 'piece', 1, 420000, 590000, 6, 2, 'good', 'LG', 'MON-24'),
+    (p_shop_id, 'Keyboard', 'Accessories', '⌨️', 'piece', 'piece', 1, 25000, 42000, 12, 4, 'good', 'Logitech', 'KB-101'),
+    (p_shop_id, 'Power Bank', 'Electronics', '🔋', 'piece', 'piece', 1, 55000, 82000, 10, 3, 'good', 'Anker', 'PB-88');
+END;
+$$;
+
+CREATE OR REPLACE FUNCTION public.seed_demo_customers_and_suppliers(p_shop_id uuid)
+RETURNS void
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+BEGIN
+  INSERT INTO public.customers (shop_id, name, phone, balance, notes)
+  VALUES
+    (p_shop_id, 'Jane Nakato', '0772001001', 180000, 'Regular customer'),
+    (p_shop_id, 'Peter Kato', '0772001002', 0, 'Cash buyer'),
+    (p_shop_id, 'Sarah Mutesa', '0772001003', 95000, 'Buys monthly products'),
+    (p_shop_id, 'Daniel Mugisha', '0772001004', 0, 'No credit history');
+
+  INSERT INTO public.suppliers (shop_id, name, phone, location, contact, products, balance, rating)
+  VALUES
+    (p_shop_id, 'Bentech Wholesale', '0774002001', 'Kampala', 'Samuel', '[]'::jsonb, 0, 5),
+    (p_shop_id, 'Mbarara Gadgets', '0774002002', 'Mbarara', 'Grace', '[]'::jsonb, 0, 4),
+    (p_shop_id, 'Office Essentials', '0774002003', 'Kampala', 'Ruth', '[]'::jsonb, 0, 5);
+END;
+$$;
+
+CREATE OR REPLACE FUNCTION public.seed_demo_sales_and_expenses(p_shop_id uuid)
+RETURNS void
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+DECLARE
+  v_sale_id uuid;
+BEGIN
+  INSERT INTO public.expenses (shop_id, category, amount, payment, description)
+  VALUES
+    (p_shop_id, 'Rent', 350000, 'Cash', 'Shop rent payment'),
+    (p_shop_id, 'Utilities', 120000, 'Mobile Money', 'Power and internet'),
+    (p_shop_id, 'Transport', 60000, 'Cash', 'Supplier delivery');
+
+  INSERT INTO public.sales (shop_id, receipt_no, time, total, payment, customer_name, attendant)
+  VALUES
+    (p_shop_id, 'RCP100001', now() - interval '1 day', 980000, 'Cash', 'Jane Nakato', 'Owner'),
+    (p_shop_id, 'RCP100002', now() - interval '12 hours', 590000, 'Mobile Money', 'Peter Kato', 'Owner');
+
+  SELECT id INTO v_sale_id
+  FROM public.sales
+  WHERE shop_id = p_shop_id
+  ORDER BY time DESC
+  LIMIT 1;
+
+  INSERT INTO public.sale_items (sale_id, shop_id, product, product_id, qty, price, total)
+  VALUES
+    (v_sale_id, p_shop_id, 'HP Laptop 15', null, 1, 980000, 980000),
+    (v_sale_id, p_shop_id, 'Monitor 24', null, 1, 590000, 590000);
+END;
+$$;
+
+CREATE OR REPLACE FUNCTION public.run_demo_bootstrap(
+  p_owner_id uuid,
+  p_shop_name text,
+  p_owner_name text default null,
+  p_phone text default null,
+  p_location text default null,
+  p_currency text default 'UGX',
+  p_shop_type text default 'Retail Shop'
+)
+RETURNS public.shops
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+DECLARE
+  v_shop public.shops;
+BEGIN
+  SELECT * INTO v_shop
+  FROM public.bootstrap_shop(
+    p_owner_id,
+    p_shop_name,
+    p_owner_name,
+    p_phone,
+    p_location,
+    p_currency,
+    p_shop_type
+  );
+
+  PERFORM public.seed_demo_products(v_shop.id);
+  PERFORM public.seed_demo_customers_and_suppliers(v_shop.id);
+  PERFORM public.seed_demo_sales_and_expenses(v_shop.id);
+
+  RETURN v_shop;
+END;
+$$;
+
+-- ============================================================
+-- Example usage after you log in:
+-- SELECT public.run_demo_bootstrap(
+--   'PASTE_REAL_AUTH_USER_ID_HERE',
+--   'Bentech Computers UG',
+--   'Benedict Ahumuza',
+--   '0772123456',
+--   'Rutooma, Mbarara',
+--   'UGX',
+--   'Retail Shop'
+-- );
+-- ============================================================

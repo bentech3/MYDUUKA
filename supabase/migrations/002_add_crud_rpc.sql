@@ -241,7 +241,7 @@ begin
   where id = p_customer_id and shop_id = p_shop_id;
 
   insert into public.customer_transactions
-    (customer_id, shop_id, type, amount, "desc", sale_id)
+    (customer_id, shop_id, type, amount, description, sale_id)
   values
     (p_customer_id, p_shop_id, p_type, p_amount, 'Payment received', p_sale_id)
   returning * into result;
@@ -485,7 +485,7 @@ as $$
 declare
   result public.expenses;
 begin
-  insert into public.expenses (shop_id, category, amount, payment, "desc")
+  insert into public.expenses (shop_id, category, amount, payment, description)
   values (p_shop_id, p_category, p_amount, p_payment, p_desc)
   returning * into result;
   return result;
@@ -523,7 +523,7 @@ begin
     category = coalesce(p_category, category),
     amount = coalesce(p_amount, amount),
     payment = coalesce(p_payment, payment),
-    "desc" = coalesce(p_desc, "desc")
+    description = coalesce(p_desc, description)
   where id = p_id and shop_id = p_shop_id
   returning * into result;
   return result;
