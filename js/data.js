@@ -65,22 +65,22 @@ const Store = (() => {
     completeSale(paymentMethod, customerId = null, amountReceived = null) {
       const total = this.getCartTotal();
       const receiptNo = 'RCP' + String(todaySales.length + 101).padStart(6, '0');
-      const sale = { id: Utils.uid(), receiptNo, time: new Date(), items: [...cart.map(i => ({ product: i.name, qty: i.qty, price: i.price, total: i.price * i.qty }))], total, payment: paymentMethod, customer: customerId ? (customers.find(c => c.id === customerId)?.name || '') : null, attendant: App.state.user?.name || 'Sarah N.' };
+      const sale = { id: Utils.uid(), receiptNo, time: new Date(), items: [...cart.map(i => ({ product: i.name, qty: i.qty, price: i.price, total: i.price * i.qty }))], total, payment: paymentMethod, customer: customerId ? (customers.find(c => c.id === customerId)?.name || '') : null, attendant: App.state.user?.name || 'Owner' };
       cart.forEach(item => { const p = products.find(pr => pr.id === item.productId); if (p) { p.stock = Math.max(0, p.stock - item.qty); p.status = Utils.stockStatus(p.stock, p.minStock); } });
       if (paymentMethod === 'Credit' && customerId) { const cust = customers.find(c => c.id === customerId); if (cust) cust.balance += total; }
       todaySales.unshift(sale);
-      activityLog.unshift({ id: Utils.uid(), user: App.state.user?.name || 'Sarah N.', action: 'Recorded a sale', detail: Utils.formatCurrency(total), time: new Date(), type: 'sale' });
+      activityLog.unshift({ id: Utils.uid(), user: App.state.user?.name || 'Owner', action: 'Recorded a sale', detail: Utils.formatCurrency(total), time: new Date(), type: 'sale' });
       this.clearCart(); saveToStorage(); addToSyncQueue('sale', sale);
       return sale;
     },
 
-    addStock(productId, qty, unit, price, supplierId) { const product = products.find(p => p.id === productId); if (!product) return; const newQty = product.conversion === 1 ? qty : qty * product.conversion; product.stock += newQty; product.status = Utils.stockStatus(product.stock, product.minStock); activityLog.unshift({ id: Utils.uid(), user: App.state.user?.name || 'Benedict O.', action: `Added ${qty} ${unit} of ${product.name}`, detail: `Stock: ${product.stock} ${product.sellingUnit}s`, time: new Date(), type: 'stock' }); saveToStorage(); addToSyncQueue('stock', { productId, qty, unit, price, supplierId }); },
+    addStock(productId, qty, unit, price, supplierId) { const product = products.find(p => p.id === productId); if (!product) return; const newQty = product.conversion === 1 ? qty : qty * product.conversion; product.stock += newQty; product.status = Utils.stockStatus(product.stock, product.minStock); activityLog.unshift({ id: Utils.uid(), user: App.state.user?.name || 'Owner', action: `Added ${qty} ${unit} of ${product.name}`, detail: `Stock: ${product.stock} ${product.sellingUnit}s`, time: new Date(), type: 'stock' }); saveToStorage(); addToSyncQueue('stock', { productId, qty, unit, price, supplierId }); },
 
-    addExpense(category, amount, payment, description) { const exp = { id: Utils.uid(), category, amount, payment, description, date: new Date() }; expenses.unshift(exp); activityLog.unshift({ id: Utils.uid(), user: App.state.user?.name || 'Benedict O.', action: 'Added expense', detail: `${Utils.formatCurrency(amount)} — ${category}`, time: new Date(), type: 'expense' }); saveToStorage(); addToSyncQueue('expense', exp); return exp; },
+    addExpense(category, amount, payment, description) { const exp = { id: Utils.uid(), category, amount, payment, description, date: new Date() }; expenses.unshift(exp); activityLog.unshift({ id: Utils.uid(), user: App.state.user?.name || 'Owner', action: 'Added expense', detail: `${Utils.formatCurrency(amount)} — ${category}`, time: new Date(), type: 'expense' }); saveToStorage(); addToSyncQueue('expense', exp); return exp; },
 
     deleteExpense(expenseId) { const idx = expenses.findIndex(e => e.id === expenseId); if (idx === -1) return; expenses.splice(idx, 1); saveToStorage(); addToSyncQueue('delete_expense', { id: expenseId }); },
 
-    receiveCreditPayment(customerId, amount, method) { const cust = customers.find(c => c.id === customerId); if (!cust) return; cust.balance = Math.max(0, cust.balance - amount); cust.lastTx = new Date(); cust.transactions.push({ date: new Date(), type: 'payment', amount, description: method }); activityLog.unshift({ id: Utils.uid(), user: App.state.user?.name || 'Benedict O.', action: 'Received payment', detail: `${cust.name} paid ${Utils.formatCurrency(amount)}`, time: new Date(), type: 'payment' }); saveToStorage(); addToSyncQueue('payment', { customerId, amount, method }); },
+    receiveCreditPayment(customerId, amount, method) { const cust = customers.find(c => c.id === customerId); if (!cust) return; cust.balance = Math.max(0, cust.balance - amount); cust.lastTx = new Date(); cust.transactions.push({ date: new Date(), type: 'payment', amount, description: method }); activityLog.unshift({ id: Utils.uid(), user: App.state.user?.name || 'Owner', action: 'Received payment', detail: `${cust.name} paid ${Utils.formatCurrency(amount)}`, time: new Date(), type: 'payment' }); saveToStorage(); addToSyncQueue('payment', { customerId, amount, method }); },
 
     addCustomer(name, phone, notes = '') { const cust = { id: Utils.uid(), name, phone, balance: 0, lastTx: new Date(), notes, transactions: [] }; customers.push(cust); saveToStorage(); addToSyncQueue('customer', cust); return cust; },
 
@@ -98,7 +98,7 @@ const Store = (() => {
 
     deleteProduct(productId) { const idx = products.findIndex(p => p.id === productId); if (idx === -1) return; products.splice(idx, 1); saveToStorage(); addToSyncQueue('delete_product', { id: productId }); },
 
-    adjustStock(productId, newQty, reason) { const product = products.find(p => p.id === productId); if (!product) return; const prev = product.stock; product.stock = newQty; product.status = Utils.stockStatus(product.stock, product.minStock); activityLog.unshift({ id: Utils.uid(), user: App.state.user?.name || 'Benedict O.', action: 'Adjusted stock', detail: `${product.name}: ${prev} → ${newQty} (${reason})`, time: new Date(), type: 'adjustment' }); saveToStorage(); addToSyncQueue('adjustment', { productId, newQty, reason }); },
+    adjustStock(productId, newQty, reason) { const product = products.find(p => p.id === productId); if (!product) return; const prev = product.stock; product.stock = newQty; product.status = Utils.stockStatus(product.stock, product.minStock); activityLog.unshift({ id: Utils.uid(), user: App.state.user?.name || 'Owner', action: 'Adjusted stock', detail: `${product.name}: ${prev} → ${newQty} (${reason})`, time: new Date(), type: 'adjustment' }); saveToStorage(); addToSyncQueue('adjustment', { productId, newQty, reason }); },
 
     deleteSale(saleId) { const idx = todaySales.findIndex(s => s.id === saleId); if (idx === -1) return; const sale = todaySales[idx]; sale.items.forEach(item => { const p = products.find(pr => pr.name === item.product); if (p) { p.stock += item.qty; p.status = Utils.stockStatus(p.stock, p.minStock); } }); todaySales.splice(idx, 1); saveToStorage(); addToSyncQueue('delete_sale', { id: saleId }); },
 

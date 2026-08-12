@@ -10,7 +10,7 @@ const App = (() => {
     params: {},
     previousScreen: null,
     isOnline: true,
-    user: { id: null, name: '', role: 'Owner', initials: 'ME', color: '#1A6B4A' },
+    user: { id: null, name: 'Owner', role: 'Owner', initials: 'ME', color: '#1A6B4A' },
     shopName: 'My Shop',
     lastSale: null,
     screenHistory: [],

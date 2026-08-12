@@ -72,7 +72,7 @@ window.SCREENS['settings'] = function() {
 
         <div class="text-center text-xs text-muted my-6">
           MYDUUKA v1.0.0 · Made for Uganda 🇺🇬<br>
-          Connected as Benedict Ahumuza (Owner)
+          Connected as Owner
         </div>
       </div>
     </div>
@@ -94,12 +94,12 @@ window.SCREENS['shop-profile'] = function() {
         <div class="card card-padded mb-6">
           <div class="form-group">
             <label class="form-label">Shop Name</label>
-            <input type="text" class="form-input" id="sp-shop-name" value="${App.state.user?.shopName || 'Bentech Computers UG'}">
+            <input type="text" class="form-input" id="sp-shop-name" value="${App.state.user?.shopName || 'My Shop'}">
           </div>
 
           <div class="form-group">
             <label class="form-label">Owner Name</label>
-            <input type="text" class="form-input" id="sp-owner-name" value="${App.state.user?.name || 'Benedict Ahumuza'}">
+            <input type="text" class="form-input" id="sp-owner-name" value="${App.state.user?.name || 'Owner'}">
           </div>
 
           <div class="form-group">
