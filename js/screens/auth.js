@@ -38,6 +38,13 @@ window.SCREENS['login'] = function() {
   let code = '';
   let phase = 'email'; // email | code | loading
 
+  function initializeLoginForm() {
+    setTimeout(() => {
+      const container = document.getElementById('login-form-area');
+      if (container) render();
+    }, 0);
+  }
+
   window.sendOtp = async function() {
     const raw = document.getElementById('login-email').value.trim();
     if (!raw || !raw.includes('@')) {
@@ -115,14 +122,13 @@ window.SCREENS['login'] = function() {
     }
   }
 
+  initializeLoginForm();
+
   return `
     <div class="auth-screen">
       <div class="auth-decoration">
-        <div class="splash-logo-mark">
-          <span style="font-size:36px;font-weight:800;color:white">M</span>
-        </div>
+        <img src="assets/logo.svg" alt="MYDUUKA logo" style="width: 260px; max-width: 78vw; display: block; margin: 0 auto 12px; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.18));">
         <div class="text-center text-white">
-          <h1 class="text-2xl font-extrabold mb-1">MYDUUKA</h1>
           <p class="text-sm opacity-80">Simple Digital Shop Assistant</p>
         </div>
       </div>
