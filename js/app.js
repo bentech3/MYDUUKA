@@ -60,6 +60,9 @@ const App = (() => {
     window.addEventListener('online',  () => setOnline(true));
     window.addEventListener('offline', () => setOnline(false));
 
+    // Responsive layout on resize
+    window.addEventListener('resize', () => updateMainMargin());
+
     // Handle back navigation via browser
     window.addEventListener('popstate', (e) => {
       if (e.state && e.state.screen) navigate(e.state.screen, e.state.params, true);
@@ -67,6 +70,14 @@ const App = (() => {
 
     // Navigate to splash
     navigate('splash');
+  }
+
+  function updateMainMargin() {
+    const mainEl = document.getElementById('app-main');
+    const hideNav = hideNavScreens.includes(state.currentScreen);
+    if (mainEl) {
+      mainEl.style.marginLeft = (hideNav || window.innerWidth < 1024) ? '0' : 'var(--sidebar-width)';
+    }
   }
 
   // ── Build App Shell ───────────────────────────────────────
@@ -198,10 +209,7 @@ const App = (() => {
     }
 
     // Update main content margin
-    const mainEl = document.getElementById('app-main');
-    if (mainEl) {
-      mainEl.style.marginLeft = (hideNav || window.innerWidth < 1024) ? '0' : 'var(--sidebar-width)';
-    }
+    updateMainMargin();
 
     // Render screen
     try {
@@ -547,7 +555,7 @@ const App = (() => {
         <div class="stock-card-info">
           <div class="stock-card-name">${Utils.escapeHtml(product.name)}</div>
           <div class="stock-card-qty">${product.stock} ${product.sellingUnit}s</div>
-          <div class="progress-bar mt-1" style="width:120px">
+          <div class="progress-bar mt-1">
             <div class="progress-fill ${fillClass}" style="width:${pct}%"></div>
           </div>
         </div>

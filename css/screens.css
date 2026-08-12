@@ -965,3 +965,48 @@
   color: var(--color-text-faint);
   margin-top: 2px;
 }
+
+/* ── Responsive Overrides ──────────────────────────────────── */
+@media (max-width: 360px) {
+  .splash-brand { font-size: 1.75rem; }
+}
+
+@media (max-width: 479px) {
+  .stock-summary-grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-3);
+  }
+
+  .dashboard-kpi-value,
+  .reconcile-amount,
+  .customer-balance-value,
+  .product-detail-price {
+    font-size: var(--font-size-2xl);
+  }
+
+  .denomination-row {
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+
+  .denomination-note {
+    flex: 1 1 100%;
+    min-width: 100%;
+  }
+
+  .denomination-input {
+    width: 70px;
+  }
+
+  .denomination-total {
+    min-width: unset;
+    flex: 1;
+    text-align: left;
+  }
+}
+
+@media (min-width: 640px) {
+  .stock-summary-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
